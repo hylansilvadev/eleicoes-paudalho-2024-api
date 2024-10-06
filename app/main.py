@@ -1,5 +1,5 @@
 from bson import ObjectId
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.concurrency import asynccontextmanager
 
 from app.core.database import db
@@ -14,9 +14,8 @@ async def lifespan(app: FastAPI):
 
 args = {
     "title": "API ELEICOES PAUDALHO 2024",
-    "lifespan":lifespan
+    "lifespan": lifespan
 }
-
 
 app = FastAPI(**args)
 
@@ -28,29 +27,30 @@ async def root() -> str:
     return f"bem vindo a api das eleições da cidade de paudalho"
 
 
-@app.get("/prefeito/last")
-async def get_ultimo_documento():
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
     try:
-        document = await db["eleicoes_data_prefeitos"].find_one(sort=[("_id", -1)])
-        if document:
-            # Converte o ObjectId para string para garantir que é serializável
-            document["_id"] = str(document["_id"])
-            return document
-        else:
-            return {"message": "Nenhum documento encontrado"}
+        while True:
+            data = await websocket.receive_json()
+            acao = data.get("acao")
+            if acao == "receber_prefeito":
+                document = await db["eleicoes_data_prefeitos"].find_one(sort=[("_id", -1)])
+                if document:
+                    document["_id"] = str(document["_id"])
+                    await websocket.send_json(document)
+                else:
+                    await websocket.send_json({"message": "Nenhum documento encontrado"})
+            elif acao == "receber_vereador":
+                document = await db["eleicoes_data_vereadores"].find_one(sort=[("_id", -1)])
+                if document:
+                    document["_id"] = str(document["_id"])
+                    await websocket.send_json(document)
+                else:
+                    await websocket.send_json({"message": "Nenhum documento encontrado"})
+            else:
+                await websocket.send_json({"error": "Ação desconhecida"})
+    except WebSocketDisconnect:
+        print("WebSocket desconectado")
     except Exception as e:
-        return {"error": str(e)}
-    
-    
-@app.get("/vereador/last")
-async def get_ultimo_documento():
-    try:
-        document = await db["eleicoes_data_vereadores"].find_one(sort=[("_id", -1)])
-        if document:
-            # Converte o ObjectId para string para garantir que é serializável
-            document["_id"] = str(document["_id"])
-            return document
-        else:
-            return {"message": "Nenhum documento encontrado"}
-    except Exception as e:
-        return {"error": str(e)}
+        await websocket.send_json({"error": str(e)})

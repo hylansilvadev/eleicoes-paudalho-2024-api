@@ -15,6 +15,7 @@ pydantic-settings = "^2.5.2"
 sqlalchemy = "^2.0.35"
 nest-asyncio = "^1.6.0"
 motor = "3.6.0"
+beautifulsoup4 = "^4.12.3"
 
 
 [tool.poetry.group.dev.dependencies]
