@@ -8,9 +8,13 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = {extras = ["standard"], version = "^0.115.0"}
-pymongo = "^4.10.1"
-celery = "^5.4.0"
+pymongo = "4.9"
+celery = {extras = ["redis"], version = "^5.4.0"}
 requests = "^2.32.3"
+pydantic-settings = "^2.5.2"
+sqlalchemy = "^2.0.35"
+nest-asyncio = "^1.6.0"
+motor = "3.6.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -22,6 +26,8 @@ taskipy = "^1.13.0"
 dev = "fastapi dev app/main.py"
 run = "fastapi run app/main.py"
 test = "pytest tests"
+celery-worker = "celery -A celery_app worker --loglevel=info"
+celery-beat = "celery -A celery_app beat --loglevel=info"
 
 [build-system]
 requires = ["poetry-core"]
