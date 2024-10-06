@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Hylan Silva <hylansilva@outlook.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["standard"], version = "^0.115.0"}
+pymongo = "^4.10.1"
+celery = "^5.4.0"
+requests = "^2.32.3"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+taskipy = "^1.13.0"
+
+
+[tool.taskipy.tasks]
+dev = "fastapi dev app/main.py"
+run = "fastapi run app/main.py"
+test = "pytest tests"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
