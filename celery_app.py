@@ -84,7 +84,7 @@ def fetch_and_save_data_prefeitos():
             data = response.json()
 
             # Usar asyncio.run() para executar a corrotina assíncrona
-            result = asyncio.run(save_data_to_mongodb(data))
+            result = asyncio.run(save_data_to_mongodb(data, "eleicoes_data_prefeitos"))
 
             return result
         else:

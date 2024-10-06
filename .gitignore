@@ -167,3 +167,7 @@ cython_debug/
 *.db
 *.sql
 
+*.sqlite
+*.dat
+*.bak
+*.dir

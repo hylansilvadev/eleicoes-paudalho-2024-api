@@ -28,10 +28,10 @@ async def root() -> str:
     return f"bem vindo a api das eleições da cidade de paudalho"
 
 
-@app.get("prefeito/last")
+@app.get("/prefeito/last")
 async def get_ultimo_documento():
     try:
-        document = await db["eleicoes_data_prefeito"].find_one(sort=[("_id", -1)])
+        document = await db["eleicoes_data_prefeitos"].find_one(sort=[("_id", -1)])
         if document:
             # Converte o ObjectId para string para garantir que é serializável
             document["_id"] = str(document["_id"])
@@ -42,7 +42,7 @@ async def get_ultimo_documento():
         return {"error": str(e)}
     
     
-@app.get("vereador/last")
+@app.get("/vereador/last")
 async def get_ultimo_documento():
     try:
         document = await db["eleicoes_data_vereadores"].find_one(sort=[("_id", -1)])
