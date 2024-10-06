@@ -11,6 +11,7 @@ COPY . /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     libssl-dev \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar o Poetry sem ambiente virtual e atualizar o pip
@@ -19,8 +20,11 @@ RUN pip install --no-cache-dir poetry && \
     poetry lock --no-update && \
     poetry install --no-root
 
+# Configurar o supervisord
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Expor a porta 8000 para a API
 EXPOSE 8000
 
-# Comando para iniciar o FastAPI
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Comando para iniciar o supervisord
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
