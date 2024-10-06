@@ -13,11 +13,14 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar as dependências do projeto usando Poetry
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-root
+# Instalar o Poetry sem ambiente virtual e atualizar o pip
+RUN pip install --no-cache-dir poetry && \
+    poetry config virtualenvs.create false && \
+    poetry lock --no-update && \
+    poetry install --no-root
 
 # Expor a porta 8000 para a API
 EXPOSE 8000
 
-# Comando para iniciar o FastAPI e o Celery
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 & celery -A celery_app worker --loglevel=info & celery -A celery_app beat --loglevel=info"]
+# Comando para iniciar o FastAPI
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
